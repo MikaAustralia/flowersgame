@@ -1,17 +1,17 @@
 (() => {
   "use strict";
 
-  // --- helpers ---
   const $ = id => document.getElementById(id);
   const log = (...a) => console.log("[FlowerRush]", ...a);
-  const err = (...a) => console.error("[FlowerRush]", ...a);
 
+  // Режимы сложности
   const DIFFICULTY = {
     easy:   { timerSec: 40, orderItems: 3 },
     medium: { timerSec: 30, orderItems: 4 },
     hard:   { timerSec: 20, orderItems: 5 }
   };
 
+  // Цветы
   const FLOWERS = [
     { id: "rose",  label: "Роза",    emoji: "🌹" },
     { id: "peony", label: "Пион",    emoji: "🌸" },
@@ -22,66 +22,50 @@
 
   class Game {
     constructor() {
-      // Проверяем наличие узлов
-      const required = [
-        "startScreen","difficulty","playBtn","hud","timer","score",
-        "orderList","gameField","resultScreen","resultTitle",
-        "resultDetails","promoWrap","promoCode","playAgainBtn"
-      ];
-      const missing = required.filter(id => !$(id));
-      if (missing.length) {
-        err("Не найдены элементы:", missing);
-      }
-
-      // Состояние
       this.diff = DIFFICULTY.easy;
       this.timer = 0;
       this.order = [];
       this.collected = {};
-      this.interval = null;
       this.endAt = 0;
       this.score = 0;
+      this.interval = null;
 
-      // Привязка событий (надёжно)
+      // Привязка кнопок
       const playBtn = $("playBtn");
       if (playBtn) playBtn.addEventListener("click", () => this.start());
-      else err("playBtn не найден");
 
-      const playAgain = $("playAgainBtn");
-      if (playAgain) playAgain.addEventListener("click", () => this.showStart());
+      const playAgainBtn = $("playAgainBtn");
+      if (playAgainBtn) playAgainBtn.addEventListener("click", () => this.showStart());
 
       const diffSel = $("difficulty");
       if (diffSel) {
-        diffSel.addEventListener("change", (e) => {
+        diffSel.addEventListener("change", e => {
           const key = e.target.value;
           this.diff = DIFFICULTY[key] || DIFFICULTY.easy;
-          log("Сложность:", key, this.diff);
         });
       }
 
-      // Первый экран
       this.showStart();
       log("Игра инициализирована");
     }
 
     showStart() {
-      this._hide("resultScreen");
+      this._show("startScreen");
       this._hide("hud");
       this._hide("gameField");
-      this._show("startScreen");
+      this._hide("resultScreen");
     }
 
     start() {
       log("Старт игры");
-      // заказ
+      // Генерация заказа
       this.order = [];
       this.collected = {};
       const pool = [...FLOWERS];
-      const n = this.diff.orderItems || 3;
-      for (let i = 0; i < n; i++) {
+      for (let i = 0; i < this.diff.orderItems; i++) {
         const idx = Math.floor(Math.random() * pool.length);
         const f = pool.splice(idx, 1)[0];
-        const need = 1 + Math.floor(Math.random() * 3); // 1..3
+        const need = 1 + Math.floor(Math.random() * 3); // 1–3
         this.order.push({ ...f, need });
         this.collected[f.id] = 0;
       }
@@ -125,9 +109,7 @@
 
     spawnLoop() {
       if (this.timer <= 0) return;
-      // Спавним цветок
       this.spawnOne();
-      // Планируем следующее появление
       setTimeout(() => this.spawnLoop(), 650 + Math.random() * 300);
     }
 
@@ -140,14 +122,12 @@
       el.dataset.id = flower.id;
       el.textContent = flower.emoji;
       el.style.position = "absolute";
-      el.style.userSelect = "none";
       el.style.top = (10 + Math.random() * 80) + "%";
       el.style.left = (10 + Math.random() * 80) + "%";
       el.style.fontSize = (26 + Math.floor(Math.random()*10)) + "px";
       el.style.cursor = "pointer";
-      el.addEventListener("pointerdown", () => this.clickFlower(el), { passive: true });
+      el.addEventListener("click", () => this.clickFlower(el));
       field.appendChild(el);
-      // TTL
       setTimeout(() => el.remove(), 2000);
     }
 
@@ -161,7 +141,6 @@
         this._updateOrderRow(item);
         if (this.isDone()) this.finish(true);
       } else {
-        // промах / лишний клик
         this.score = Math.max(0, this.score - 5);
         this._setText("score", "Очки: " + this.score);
       }
@@ -173,10 +152,12 @@
       if (li) li.textContent = `${item.emoji} ${item.label} ${this.collected[item.id]}/${item.need}`;
     }
 
-    isDone() { return this.order.every(f => this.collected[f.id] >= f.need); }
+    isDone() {
+      return this.order.every(f => this.collected[f.id] >= f.need);
+    }
 
     finish(win) {
-      if (this.interval) clearInterval(this.interval);
+      clearInterval(this.interval);
       this._hide("hud");
       this._hide("gameField");
       this._show("resultScreen");
@@ -191,22 +172,17 @@
       } else if (promoWrap) {
         promoWrap.style.display = "none";
       }
-      log("Финиш. Победа:", win, "Очки:", this.score);
     }
 
-    // --- utils ---
+    // --- helpers ---
     _show(id) { const n = $(id); if (n) n.style.display = ""; }
     _hide(id) { const n = $(id); if (n) n.style.display = "none"; }
     _setText(id, text) { const n = $(id); if (n) n.textContent = text; }
   }
 
-  // Безопасный запуск
+  // Запуск после загрузки DOM
   window.addEventListener("DOMContentLoaded", () => {
-    try {
-      new Game();
-      log("DOMContentLoaded → Game создан");
-    } catch (e) {
-      err("Инициализация провалилась:", e);
-    }
+    new Game();
+    log("DOMContentLoaded → Game создан");
   });
 })();
