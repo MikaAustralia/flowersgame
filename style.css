@@ -5,19 +5,15 @@
   --ink-soft: #666;
   --brand: #e83e8c;
   --accent: #6c5ce7;
-  --ok: #2ecc71;
-  --fail: #e74c3c;
   --line: #e9e9ef;
   --shadow: 0 8px 30px rgba(0,0,0,.06);
   --radius: 18px;
 }
 
 * { box-sizing: border-box; }
-html, body { height: 100%; }
-
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+  font-family: system-ui, Arial, sans-serif;
   color: var(--ink);
   background: linear-gradient(180deg, var(--bg), #fff);
   display: flex;
@@ -25,7 +21,6 @@ body {
   justify-content: center;
   padding: 20px;
 }
-
 .app {
   width: min(100%, 980px);
   background: var(--card);
@@ -34,16 +29,13 @@ body {
   box-shadow: var(--shadow);
   overflow: hidden;
 }
-
 header {
   padding: 18px 22px;
   display: flex;
-  align-items: center;
   gap: 12px;
   border-bottom: 1px solid var(--line);
   background: linear-gradient(180deg, #fff, #fff9fd);
 }
-
 .logo {
   width: 42px;
   height: 42px;
@@ -54,21 +46,10 @@ header {
   background: #ffe3f0;
   color: var(--brand);
 }
-
-header h1 {
-  font-size: 18px;
-  margin: 0;
-}
-header p {
-  margin: 0;
-  color: var(--ink-soft);
-  font-size: 13px;
-}
-
+header h1 { font-size: 18px; margin: 0; }
+header p { margin: 0; color: var(--ink-soft); font-size: 13px; }
 main { padding: 22px; }
 
-/* Screens */
-#startScreen, #resultScreen, #hud { max-width: 920px; margin: 0 auto; }
 .card {
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -76,8 +57,6 @@ main { padding: 22px; }
   background: #fff;
   box-shadow: var(--shadow);
 }
-
-/* Start screen */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -86,11 +65,8 @@ main { padding: 22px; }
 }
 label { font-weight: 600; }
 select, button {
-  appearance: none;
-  -webkit-appearance: none;
   border: 1px solid var(--line);
   background: #fff;
-  color: var(--ink);
   padding: 10px 14px;
   border-radius: 12px;
   font-size: 16px;
@@ -100,19 +76,15 @@ button {
   background: linear-gradient(180deg, var(--brand), #c92672);
   color: #fff;
   cursor: pointer;
-  transition: transform .05s ease;
 }
-button:active { transform: translateY(1px); }
 .btn-secondary {
   background: linear-gradient(180deg, var(--accent), #5a48e0);
 }
 
-/* HUD */
 #hud { display: none; margin-bottom: 14px; }
 .hud {
   display: flex;
   gap: 10px;
-  align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
   border: 1px dashed var(--line);
@@ -142,7 +114,6 @@ button:active { transform: translateY(1px); }
   background: #fff;
 }
 
-/* Game field */
 #gameField {
   display: none;
   position: relative;
@@ -153,18 +124,14 @@ button:active { transform: translateY(1px); }
   border-radius: 16px;
   background: #fffdfa;
   overflow: hidden;
-  background-image:
-    radial-gradient(#ffeef6 1px, transparent 1px),
-    radial-gradient(#fff3fa 1px, transparent 1px);
-  background-position: 0 0, 12px 12px;
-  background-size: 24px 24px;
 }
 #gameField [data-type="flower"] {
   touch-action: manipulation;
-  filter: drop-shadow(0 2px 10px rgba(0,0,0,.08));
+  font-size: 32px;
+  position: absolute;
+  cursor: pointer;
 }
 
-/* Result */
 #resultScreen { display: none; text-align: center; }
 .result-title { font-size: 28px; margin: 8px 0; }
 .note { color: var(--ink-soft); }
@@ -178,11 +145,4 @@ button:active { transform: translateY(1px); }
   display: none;
   width: fit-content;
   font-weight: 700;
-  letter-spacing: .5px;
 }
-
-@media (max-width: 720px) {
-  header { flex-direction: row; }
-  #gameField { min-height: 360px; }
-}
-
